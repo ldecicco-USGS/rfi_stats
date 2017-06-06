@@ -2,7 +2,6 @@ library(googlesheets)
 library(dplyr)
 library(tidyr)
 
-
 gs_auth()
 
 my_sheets <- gs_ls()
@@ -19,7 +18,7 @@ for(vendor in scorecards){
     individual_score <- gs_read(card_title, ws = i, col_names = TRUE, skip = 1)
     individual_score$person <- i
     individual_score$vender <- vendor
-    if(i == "Melanie" & vendor == "Aquatic Informatics Scorecard"){
+    if(i == "Melanie" & vendor == "Abbott Informatics Scorecard"){
       co_types <- lapply(individual_score, class)
     } else {
       co_types_new <- lapply(individual_score, class)
@@ -32,10 +31,12 @@ for(vendor in scorecards){
     }
     
     massive_score <- bind_rows(massive_score, individual_score)
+    saveRDS(massive_score, file="massive_score.rds")
     Sys.sleep(time = 6)
   }
 }
 
+saveRDS(massive_score, file="massive_score.rds")
 write.csv(massive_score, file = "massive_score_table.csv", row.names = FALSE)
 
 must_haves <- massive_score %>%
@@ -74,7 +75,9 @@ tableSumm <- datatable(satisfaction_wide, options = list(pageLength = nrow(satis
 ignoreIndex <- 1:2
 tableSumm <- formatRound(tableSumm, names(satisfaction_wide)[-ignoreIndex], 2)
 
-colors <- brewer.pal(ncol(satisfaction_wide)-2,"Set3")
+# colors <- brewer.pal(ncol(satisfaction_wide)-2,"Set3")
+colfunc <- colorRampPalette(c("steelblue", "white"))
+colors <- colfunc(ncol(satisfaction_wide)-2)
 names(colors) <- names(satisfaction_wide)[3:ncol(satisfaction_wide)]
 for(i in names(satisfaction_wide)[3:ncol(satisfaction_wide)]){
   tableSumm <- formatStyle(tableSumm, as.character(i),
