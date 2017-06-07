@@ -76,7 +76,7 @@ ignoreIndex <- 1:2
 tableSumm <- formatRound(tableSumm, names(satisfaction_wide)[-ignoreIndex], 2)
 
 # colors <- brewer.pal(ncol(satisfaction_wide)-2,"Set3")
-colfunc <- colorRampPalette(c("steelblue", "white"))
+colfunc <- colorRampPalette(c("#f3904f", "#3b4371"))
 colors <- colfunc(ncol(satisfaction_wide)-2)
 names(colors) <- names(satisfaction_wide)[3:ncol(satisfaction_wide)]
 for(i in names(satisfaction_wide)[3:ncol(satisfaction_wide)]){
