@@ -18,7 +18,7 @@ for(vendor in scorecards){
     individual_score <- gs_read(card_title, ws = i, col_names = TRUE, skip = 1)
     individual_score$person <- i
     individual_score$vender <- vendor
-    if(i == "Melanie" & vendor == "Abbott Informatics Scorecard"){
+    if(i == gs_ws_ls(card_title)[1] & vendor == scorecards[1]){
       co_types <- lapply(individual_score, class)
     } else {
       co_types_new <- lapply(individual_score, class)
