@@ -48,8 +48,10 @@ library(tidyr)
 
 must_haves <- massive_score %>%
   filter(`Final Requirement Level` == "Must have") %>%
+  mutate(Feature = ifelse(`Feature Present Value` == "FALSE", NA, as.numeric(`Satisfaction Value`))) %>%
   group_by(vender, Category) %>%
-  summarise(count = n())
+  summarise(count = sum(Feature, na.rm = TRUE)/sum(!is.na(Feature))) %>%
+  spread(Category, count)
 
 sumStat <- table(select(massive_score, vender, `Final Requirement Level`, Category, `Feature Satisfaction`)) %>%
   data.frame() %>%
