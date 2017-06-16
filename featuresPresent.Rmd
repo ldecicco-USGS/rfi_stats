@@ -34,14 +34,14 @@ for(i in c("Must have","Ideal","Could live without")){
     summarise(count = sum(Feature, na.rm = TRUE)/sum(!is.na(Feature))) %>%
     spread(Category, count) %>%
       mutate(requirement = i)
-  
+
   datasets[[i]] <- sub_df
     
 }
 
 htmltools::tagList(
   lapply(datasets, function(x) {
-    datatable(x[,-ncol(x)],  extensions = 'Buttons',
+    formatRound(datatable(x[,-ncol(x)],  extensions = 'Buttons',
               caption = htmltools::tags$caption(
     style = 'text-align: center; font-weight: bold; font-size: 200%',
     htmltools::h1(unique(x[ncol(x)]))),
@@ -59,7 +59,7 @@ htmltools::tagList(
                                     filename= 'featurePresent')),
                 text = 'Download'
                 )
-              )))
+              ))), names(x)[c(-1,-ncol(x))], 2)
     })
 )
 ```
