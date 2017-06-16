@@ -29,7 +29,7 @@ for(i in c("Must have","Ideal","Could live without")){
   sub_df <- massive_score %>%
     filter(`Final Requirement Level` == i) %>%
     mutate(Feature = ifelse(`Feature Present Value` == "FALSE", NA,
-                            as.numeric(`Satisfaction Value`))) %>%
+                            as.numeric(`Feature Present Value`))) %>%
     group_by(vender, Category) %>%
     summarise(count = sum(Feature, na.rm = TRUE)/sum(!is.na(Feature))) %>%
     spread(Category, count) %>%
