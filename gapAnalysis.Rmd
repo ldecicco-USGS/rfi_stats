@@ -1,0 +1,53 @@
+---
+title: "Gap Analysis"
+author: "Team Market Research"
+date: "June 16, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Setting up tables for each vendor, of all the categories and scores that they recieved "Not Apparent", "No", "Not Mentioned", "Pass":
+
+
+```{r echo=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(DT)
+library(RColorBrewer)
+library(htmlwidgets)
+library(knitr)
+
+massive_score <- readRDS("massive_score.rds")
+
+datasets <- list()
+
+for(i in unique(massive_score$vender)){
+  sub_df <- filter(massive_score, vender == i,
+                   `Feature Present` %in% c("No","Not apparent",
+                                            "Not mentioned","Pass")) %>%
+    select(Category,FeatureOrCharacteristic, `Final Requirement Level`,vender) %>%
+    mutate(`Final Requirement Level` = factor(`Final Requirement Level`, levels = c("Must have", "Ideal", "Could live without", "Pass"))) %>%
+    group_by(Category,FeatureOrCharacteristic, `Final Requirement Level`,vender) %>%
+    summarize(counts = n()) %>%
+    arrange(`Final Requirement Level`,desc(counts))
+  
+  datasets[[i]] <- sub_df
+    
+}
+
+htmltools::tagList(
+  lapply(datasets, function(x) {
+    datatable(x[,-4], 
+              caption = htmltools::tags$caption(
+    style = 'text-align: center; font-weight: bold; font-size: 200%',
+    htmltools::h1(unique(x$vender))))
+    })
+)
+```
+
+
+

@@ -10,7 +10,9 @@ scorecards <- my_sheets$sheet_title[grep(pattern = "Scorecard",x = my_sheets$she
 scorecards <- scorecards[scorecards != "Scorecard_Original"]
 massive_score <- data.frame()
 
-for(vendor in scorecards){
+# massive_score <- readRDS("massive_score.rds")
+
+for(vendor in scorecards){#[!(scorecards %in% unique(massive_score$vender))]){
   card_title <- gs_title(vendor)
 
   for(i in gs_ws_ls(card_title)[1:12]){
@@ -32,12 +34,17 @@ for(vendor in scorecards){
     
     massive_score <- bind_rows(massive_score, individual_score)
     saveRDS(massive_score, file="massive_score.rds")
-    Sys.sleep(time = 6)
+    Sys.sleep(time = 10)
   }
 }
 
 saveRDS(massive_score, file="massive_score.rds")
 write.csv(massive_score, file = "massive_score_table.csv", row.names = FALSE)
+
+#########################################################
+massive_score <- readRDS("massive_score.rds")
+library(dplyr)
+library(tidyr)
 
 must_haves <- massive_score %>%
   filter(`Final Requirement Level` == "Must have") %>%
