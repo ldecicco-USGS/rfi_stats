@@ -1,0 +1,68 @@
+---
+title: "Overall Market Ready"
+author: "Team Market Research"
+date: "June 16, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Overall market table (ignore vendors):
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(DT)
+library(RColorBrewer)
+library(htmlwidgets)
+library(knitr)
+
+massive_score <- readRDS("massive_score.rds")
+
+datasets <- list()
+
+for(i in c("Must have","Ideal","Could live without")){
+  sub_df <- massive_score %>%
+    filter(`Final Requirement Level` == i) %>%
+    mutate(Feature = ifelse(`Feature Present Value` == "FALSE", NA,
+                            as.numeric(`Feature Present Value`))) %>%
+    group_by(Category, `Feature Present`) %>%
+    summarise(count = sum(Feature, na.rm = TRUE)/sum(!is.na(Feature))) %>%
+    spread(Category, count) %>%
+      mutate(requirement = i)
+
+  datasets[[i]] <- sub_df
+    
+}
+
+htmltools::tagList(
+  lapply(datasets, function(x) {
+    formatRound(datatable(x[,-ncol(x)],  extensions = 'Buttons',
+              caption = htmltools::tags$caption(
+    style = 'text-align: center; font-weight: bold; font-size: 200%',
+    htmltools::h1(unique(x[ncol(x)]))),
+        options = list(#dom = 'ft',
+            dom = 'Bfrtip',
+            pageLength = nrow(x),
+            buttons =
+              list('colvis', list(
+                extend = 'collection',
+                buttons = list(list(extend='csv',
+                                    filename = 'featurePresent'),
+                               list(extend='excel',
+                                    filename = 'featurePresent'),
+                               list(extend='pdf',
+                                    filename= 'featurePresent')),
+                text = 'Download'
+                )
+              ))), names(x)[c(-1,-ncol(x))], 2)
+    })
+)
+```
+
+
+
